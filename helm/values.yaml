@@ -1,0 +1,30 @@
+backend:
+  image:
+    repository: ismetsari/name-the-footballer-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+frontend:
+  image:
+    repository: ismetsari/name-the-footballer-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  env:
+    - name: BACKEND_URL
+      value: "name-the-footballer-backend:3001"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 500m
+      memory: 512Mi
