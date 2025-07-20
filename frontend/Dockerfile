@@ -1,18 +1,33 @@
+# Step 1: Build React app with env variable
+FROM node:18-slim AS build
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy the source code
+COPY . .
+
+# Build the app (REACT_APP_BACKEND_URL must be passed during build)
+ARG REACT_APP_BACKEND_URL
+ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+RUN npm run build
+
+# Step 2: Serve the static files
 FROM node:18-slim
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Install a static file server
+RUN npm install -g serve
 
-# Install dependencies
-RUN npm install
+# Copy build artifacts from previous stage
+COPY --from=build /app/build /app/build
 
-# Copy source code
-COPY . .
+# Expose port 3000
+EXPOSE 3000
 
-# Expose the port
-EXPOSE 3000 
-
-# Command to run the application
-CMD ["npm", "start"]
+# Serve the app
+CMD ["serve", "-s", "build", "-l", "3000"]

@@ -9,8 +9,7 @@ function App() {
   const [dailyPlayer, setDailyPlayer] = useState(null);
   const [attempts, setAttempts] = useState(0);
 
-  // Use the environment variable for the backend URL
-  const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
 
   useEffect(() => {
     axios.get(`${backendUrl}/search-players`)
@@ -34,14 +33,10 @@ function App() {
     if (!dailyPlayer) return null;
 
     const normalizedGuess = normalize(guessName);
-    console.log('Normalized Guess:', normalizedGuess);
-    console.log('Normalized Daily Player Name:', normalize(dailyPlayer.name));
-    console.log('Daily Player:', dailyPlayer);
     let guessedPlayer = players.find(
       (p) => normalize(p.name) === normalizedGuess
     );
 
-    // Allow any player name and provide feedback
     if (!guessedPlayer) {
       guessedPlayer = {
         name: guessName,
@@ -83,6 +78,11 @@ function App() {
   };
 
   const handleGuess = () => {
+    if (!dailyPlayer) {
+      alert("Daily player data is still loading. Please try again shortly.");
+      return;
+    }
+
     if (attempts >= 10 || !currentGuess.trim()) return;
 
     const indicators = compareGuess(currentGuess);
@@ -98,7 +98,7 @@ function App() {
 
     if (normalize(currentGuess) === normalize(dailyPlayer.name)) {
       setMessage('🎉 You won!');
-    } else if (attempts === 9) { // 9 because attempts will be incremented after this check
+    } else if (attempts === 9) {
       setMessage(`❌ Game Over! The answer was ${dailyPlayer.name}`);
     }
   };
@@ -107,6 +107,14 @@ function App() {
     if (value === 'Unknown' || isNaN(value)) return 'Unknown';
     return `$${(value / 1e6).toFixed(1)}M`;
   };
+
+  if (!dailyPlayer) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center', fontFamily: 'Arial' }}>
+        <h2>⏳ Loading player of the day...</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="App" style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: '0 auto' }}>

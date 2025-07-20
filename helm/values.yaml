@@ -1,8 +1,8 @@
 backend:
   image:
-    repository: ismetsari/name-the-footballer-backend
+    repository: name-the-footballer-backend
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Never
   replicaCount: 1
   resources:
     limits:
@@ -14,17 +14,10 @@ backend:
 
 frontend:
   image:
-    repository: ismetsari/name-the-footballer-frontend
+    repository: name-the-footballer-frontend
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Never
   replicaCount: 1
   env:
-    - name: BACKEND_URL
-      value: "name-the-footballer-backend:3001"
-  resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 500m
-      memory: 512Mi
+    - name: REACT_APP_BACKEND_URL
+      value: "http://name-the-footballer-backend:3001"
